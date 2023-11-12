@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -30,7 +31,9 @@ import com.example.allvets.ui.navigation.Route
 import com.example.allvets.ui.theme.AllVetsTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,12 +100,10 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
-                    }){
-                        NavHost(navController = navigationController,startDestination = Route.AVLogin){
+                    }){ innerPadding ->
+                        NavHost(navController = navigationController,startDestination = if (user != null) Route.AVHome else Route.AVLogin,Modifier.padding(innerPadding)){
                             composable(Route.AVLogin) { AVLogin(navController = navigationController) }
                             composable(Route.AVHome) { AVHome(navController = navigationController) }
-
-
                         }
                     }
 

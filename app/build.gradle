@@ -10,7 +10,6 @@ plugins {
 }
 
 android {
-    namespace 'com.example.allvets'
     compileSdk 34
 
     defaultConfig {
@@ -50,6 +49,7 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.example.allvets'
 }
 
 dependencies {
@@ -110,4 +110,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.6'
 
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
+
+    //material3
+    implementation "androidx.compose.material3:material3:1.2.0-alpha10"
+
 }

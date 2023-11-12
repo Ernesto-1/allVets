@@ -2,6 +2,8 @@ package com.example.allvets.di
 
 import android.content.Context
 import com.example.allvets.domain.WebService
+import com.example.allvets.domain.home.AVHomeRepo
+import com.example.allvets.domain.home.AVHomeRepoImpl
 import com.example.allvets.domain.login.AVLoginRepo
 import com.example.allvets.domain.login.AVLoginRepoImpl
 import com.example.allvets.utils.AppConstans
@@ -26,6 +28,8 @@ import javax.inject.Singleton
 abstract class AppModule {
     @Binds
     abstract fun providesLoginRepository(repoLogin: AVLoginRepoImpl): AVLoginRepo
+    @Binds
+    abstract fun providesHomeRepository(repoHome: AVHomeRepoImpl): AVHomeRepo
 
     companion object {
 

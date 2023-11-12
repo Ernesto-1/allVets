@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">allVets</string>
+    <string-array name="taps_optoins_coupons">
+        <item>Solicitudes</item>
+        <item>Mis pacientes</item>
+    </string-array>
 </resources>

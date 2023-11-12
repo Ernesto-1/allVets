@@ -1,5 +1,7 @@
 package com.example.allvets.ui.login
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -32,32 +35,38 @@ import com.example.allvets.presentation.login.AVLoginEvent
 import com.example.allvets.presentation.login.AVLoginViewModel
 import com.example.allvets.ui.navigation.Route
 import com.example.allvets.ui.theme.*
-import com.example.allvets.ui.theme.BackGroud
-import com.example.allvets.ui.theme.BtnBlue
-import com.example.allvets.ui.theme.plata
 
 @Composable
 fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltViewModel()) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
     var hidden by rememberSaveable { mutableStateOf(true) }
     var errorEmail by rememberSaveable { mutableStateOf(false) }
     var errorPassword by rememberSaveable { mutableStateOf(false) }
     val state = viewModel.state
-    val emailRegex = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
+    val emailRegex = Regex("[A-Za-z\\d._%+-]+@[A-Za-z\\d.-]+\\.[A-Za-z]{2,4}")
     val focusRequester = remember { FocusRequester() }
     val screenWidth = LocalConfiguration.current.screenHeightDp.dp
-    val imageHeight = (screenWidth * 0.55f)
-    LaunchedEffect(state.success) {
-        if (state.success){
+    val imageHeight = (screenWidth * 0.50f)
+    val sharedPreferences = context.getSharedPreferences("UserId", Context.MODE_PRIVATE)
+    LaunchedEffect(state.isUserAutenticate) {
+        if (state.isUserAutenticate?.isEmailVerified == true){
             navController.navigate(Route.AVHome){
                 launchSingleTop = true
                 popUpTo(Route.AVLogin) {
                     inclusive = true
                 }
             }
+            Log.d("UserId",  state.isUserAutenticate?.uid.toString())
+            sharedPreferences.edit()
+                .putString(
+                    "myUserId",
+                    state.isUserAutenticate?.uid.toString()
+                ).apply()
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -70,7 +79,7 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(imageHeight),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillHeight
             )
 
             Column(
@@ -93,7 +102,8 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     label = { Text("Correo Electrónico") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight(),
+                        .wrapContentHeight()
+                        .padding(vertical = 2.5.dp),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
@@ -108,11 +118,9 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = plata,
                         unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.15f),
-                        textColor = Color.Black
+                        textColor = Color.Black, focusedLabelColor = GreenLight
                     ), isError = errorEmail || state.message.isNotEmpty()
                 )
-
-                Spacer(modifier = Modifier.height(5.dp))
 
                 OutlinedTextField(
                     value = password,
@@ -125,6 +133,7 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
+                        .padding(vertical = 2.5.dp)
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password
@@ -149,25 +158,28 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = plata,
                         unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.15f),
-                        textColor = Color.Black
+                        textColor = Color.Black, focusedLabelColor = GreenLight
                     ), isError = errorPassword || state.message.isNotEmpty()
                 )
 
-                if (errorEmail || state.message.isNotEmpty() || errorPassword) {
+                if (state.loading){
+                    CircularProgressIndicator(color = GreenLight, modifier = Modifier
+                        .size(30.dp)
+                        .padding(vertical = 10.dp))
+                }else if (errorEmail || state.message.isNotEmpty() || errorPassword) {
                     Text(
                         text =  state.message.ifEmpty { "Campo obligatorio" },
                         color = RedAlert,
-                        modifier = Modifier.padding(top = 12.dp)
+                        modifier = Modifier.padding(vertical = 10.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
                 Column(
                     modifier = Modifier.wrapContentSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ButtonDefault(
-                        textButton = "Iniciar sesion", modifier = Modifier.wrapContentWidth(), radius = 16.dp
+                        textButton = "Iniciar sesion", modifier = Modifier.wrapContentWidth(), radius = 16.dp, enabled = !state.loading
                     ) {
                         if (email.isNotEmpty() && password.isNotEmpty() && email.matches(emailRegex)){
                             viewModel.onEvent(AVLoginEvent.Login(email, password))
@@ -178,7 +190,6 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                                 state.message = "Nombre de usuario o contraseña no validos"
                             }
                         }
-
                     }
                     Text(
                         text = "¿Olvidaste tu contraseña?",
@@ -199,7 +210,9 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
-                                .clickable { }
+                                .clickable {
+
+                                }
                                 .padding(bottom = 16.dp)
                         )
                     }
