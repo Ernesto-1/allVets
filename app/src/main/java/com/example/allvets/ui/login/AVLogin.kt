@@ -52,9 +52,9 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
     val sharedPreferences = context.getSharedPreferences("UserId", Context.MODE_PRIVATE)
     LaunchedEffect(state.isUserAutenticate) {
         if (state.isUserAutenticate?.isEmailVerified == true){
-            navController.navigate(Route.AVHome){
+            navController.navigate(Route.AVHOME){
                 launchSingleTop = true
-                popUpTo(Route.AVLogin) {
+                popUpTo(Route.AVLOGIN) {
                     inclusive = true
                 }
             }

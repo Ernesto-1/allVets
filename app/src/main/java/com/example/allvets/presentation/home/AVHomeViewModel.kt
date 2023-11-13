@@ -77,7 +77,6 @@ class AVHomeViewModel @Inject constructor(val useCase: AVHomeUseCase) : ViewMode
             is AVHomeEvent.FilterQuotes -> {
                 setList(event.selectTab, event.idVet)
             }
-            else -> {}
         }
     }
 

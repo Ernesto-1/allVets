@@ -6,6 +6,8 @@ import com.example.allvets.domain.home.AVHomeRepo
 import com.example.allvets.domain.home.AVHomeRepoImpl
 import com.example.allvets.domain.login.AVLoginRepo
 import com.example.allvets.domain.login.AVLoginRepoImpl
+import com.example.allvets.domain.medical_record.AVMedicalRecordImpl
+import com.example.allvets.domain.medical_record.AVMedicalRecordRepo
 import com.example.allvets.utils.AppConstans
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,6 +32,9 @@ abstract class AppModule {
     abstract fun providesLoginRepository(repoLogin: AVLoginRepoImpl): AVLoginRepo
     @Binds
     abstract fun providesHomeRepository(repoHome: AVHomeRepoImpl): AVHomeRepo
+
+    @Binds
+    abstract fun providesMedicalRecordRepository(repoHome: AVMedicalRecordImpl): AVMedicalRecordRepo
 
     companion object {
 

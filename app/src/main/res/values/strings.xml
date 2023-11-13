@@ -4,4 +4,7 @@
         <item>Solicitudes</item>
         <item>Mis pacientes</item>
     </string-array>
+
+    <string name="label_show_medical_record">Ver expediente</string>
+    <string name="label_add_medical_diagnosis">Agregar diagnostico</string>
 </resources>

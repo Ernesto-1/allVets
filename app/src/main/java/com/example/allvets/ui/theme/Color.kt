@@ -17,3 +17,6 @@ val statusPending = Color(0xFF28ACD6)
 val greyText = Color(0xFFC5C5C5)
 val backgroundAll = Color(0xFFF8F8F8)
 
+val avGray = Color(0xFFC6C6C6)
+val avPurple = Color(0xFFB59BCF)
+

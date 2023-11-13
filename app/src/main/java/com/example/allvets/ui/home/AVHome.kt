@@ -27,12 +27,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,13 +41,13 @@ import com.example.allvets.R
 import com.example.allvets.presentation.home.AVHomeEvent
 import com.example.allvets.presentation.home.AVHomeViewModel
 import com.example.allvets.presentation.home.SendInfoDate
+import com.example.allvets.ui.navigation.Route
 import com.example.allvets.ui.templates.*
 import com.example.allvets.ui.theme.*
 import com.example.allvets.utils.convertDateTimeToTimestamp
 import com.example.allvets.utils.convertTimestampToString2
 import com.example.allvets.utils.datePicker
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -87,14 +87,16 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
     }
 
     LaunchedEffect(state.tabSelected.value, state.dataAllQuotes) {
-            viewModel.onEvent(
-                AVHomeEvent.FilterQuotes(
-                    state.tabSelected.value,
-                    idVet = myUserId.toString()
-                )
+        viewModel.onEvent(
+            AVHomeEvent.FilterQuotes(
+                state.tabSelected.value,
+                idVet = myUserId.toString()
             )
-
+        )
     }
+
+    Log.i("TAG_vets", "AVHome: ${state.dataQuotesSelected}")
+
     mDatePickerDialog.datePicker.minDate = mCalendar.timeInMillis
     mCalendar.set(mYear + 1, 11, 31)
     mDatePickerDialog.datePicker.maxDate = mCalendar.timeInMillis
@@ -263,13 +265,16 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 45.dp, bottom = 25.dp),
+                                        .padding(top = 45.dp, bottom = 25.dp)
+                                        .height(20.dp),
                                     horizontalArrangement = Arrangement.SpaceAround,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row() {
+                                    Row(modifier = Modifier.clickable {
+                                        navController.navigate("${Route.AVMEDICAL_RECORD}/${state.dataQuotesSelected.value.userId}/${state.dataQuotesSelected.value.idPatient}")
+                                    }) {
                                         Text(
-                                            text = "Ver expediente",
+                                            text = stringResource(id = R.string.label_show_medical_record),
                                             color = GreenLight,
                                             modifier = Modifier.padding(end = 8.dp)
                                         )
@@ -283,7 +288,7 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
 
                                     }) {
                                         Text(
-                                            text = "Agregar diagnostico",
+                                            text = stringResource(id = R.string.label_add_medical_diagnosis),
                                             color = BtnBlue,
                                             modifier = Modifier.padding(end = 8.dp)
                                         )
@@ -294,13 +299,8 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                                         )
                                     }
                                 }
-
-
                             }
-
-
                         }
-
                     }
                 }
             }
@@ -337,72 +337,3 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
         }
     }
 }
-
-
-data class VetCardInfo(
-    val date: String,
-    val reason: String,
-    val vetLicense: String
-)
-
-@Preview(showBackground = true)
-@Composable
-fun VetCard(
-    vetInfo: VetCardInfo = VetCardInfo(
-        date = "2023-11-09",
-        reason = "Consulta",
-        vetLicense = "Ced.Prof.: 12345"
-    ), onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        elevation = 8.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_calendar),
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                    Text(text = vetInfo.date, fontWeight = FontWeight.Bold)
-                }
-
-                Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(text = vetInfo.reason, fontWeight = FontWeight.Bold)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_medical),
-                    contentDescription = null,
-                    tint = Color.Gray
-                )
-                Text(text = vetInfo.vetLicense, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-

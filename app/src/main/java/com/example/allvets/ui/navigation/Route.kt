@@ -1,7 +1,8 @@
 package com.example.allvets.ui.navigation
 
 object Route {
-    const val AVHome = "PAHome"
+    const val AVHOME = "PAHome"
     const val PASignUp = "PASignUp"
-    const val AVLogin = "PALogin"
+    const val AVLOGIN = "PALogin"
+    const val AVMEDICAL_RECORD = "PALogin"
 }

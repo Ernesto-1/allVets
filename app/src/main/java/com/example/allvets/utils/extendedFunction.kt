@@ -15,6 +15,12 @@ fun convertTimestampToString2(timestamp: Timestamp): String {
     return dateFormat.format(date)
 }
 
+fun convertTimestampToString(timestamp: Timestamp): String {
+    val date = timestamp.toDate()
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return dateFormat.format(date)
+}
+
 fun datePicker(date: MutableState<String>, context: Context, focusManager: FocusManager): DatePickerDialog {
     val mYear: Int
     val mMonth: Int
