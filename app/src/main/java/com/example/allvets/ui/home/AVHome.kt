@@ -93,6 +93,7 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
             )
         )
     }
+    Log.i("TAG_vets ", "AVHome: ${state.dataUser}")
 
     state.dataUser?.name?.let {
         LaunchedEffect(key1 = state.dataUser?.name) {
@@ -316,6 +317,14 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                 .background(backgroundAll),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Hola ${state.dataUser?.name}!", fontSize = 16.sp)
+            }
             AVTabs(
                 options = stringArrayResource(id = R.array.taps_optoins_coupons),
                 tabSelected = selectedTabCoupons,

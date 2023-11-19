@@ -44,7 +44,7 @@ fun AVMedicalRecord(
     LaunchedEffect(Unit) {
         snapshotFlow { sheetState.currentValue }
             .collect {
-                if(it == ModalBottomSheetValue.Hidden ){
+                if (it == ModalBottomSheetValue.Hidden) {
                     selectedItem = ""
                 }
             }
@@ -53,7 +53,12 @@ fun AVMedicalRecord(
     AllVetsTheme {
         Scaffold(
             Modifier.fillMaxSize(),
-            topBar = { AVTopBar(onBack = onBack) }
+            topBar = {
+                AVTopBar(
+                    name = state.medicalRecordData?.patient?.firstOrNull()?.name ?: "",
+                    onBack = onBack
+                )
+            }
         ) {
             state.medicalRecordData?.let { listData ->
                 ModalBottomSheetLayout(
@@ -74,11 +79,14 @@ fun AVMedicalRecord(
                             ) {
                                 HeaderBottomSheet()
 
+                                Log.i(
+                                    "TAG_vets",
+                                    "AVMedicalRecord: ${state.medicalRecordData.patient}"
+                                )
                                 AVMedicalRecordCommon(
                                     data = state.medicalRecordSelect.value,
                                     recordData = state.medicalRecordData.record,
                                 )
-
                             }
                         }
                     }

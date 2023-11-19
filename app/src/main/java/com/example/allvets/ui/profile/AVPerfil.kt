@@ -87,7 +87,6 @@ fun AVProfile(
                             logout.invoke()
                         }
                 },
-            shape = RoundedCornerShape(10.dp),
             elevation = 8.dp
         ) {
             Row(
