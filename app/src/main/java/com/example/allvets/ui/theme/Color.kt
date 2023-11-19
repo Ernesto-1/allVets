@@ -20,3 +20,6 @@ val backgroundAll = Color(0xFFF8F8F8)
 val avGray = Color(0xFFC6C6C6)
 val avPurple = Color(0xFFB59BCF)
 
+val avGrayShadow = Color(0x40000000)
+val avGrayBorder = Color(0x1A000000)
+

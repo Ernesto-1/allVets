@@ -9,6 +9,8 @@ object AppConstans {
         const val FISH = "fish"
         const val CAT = "cat"
         const val BIRD = "bird"
+
+        const val TYPE_MEDICINE = "medicamento"
     }
 
 }

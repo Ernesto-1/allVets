@@ -95,8 +95,6 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
         )
     }
 
-    Log.i("TAG_vets", "AVHome: ${state.dataQuotesSelected}")
-
     mDatePickerDialog.datePicker.minDate = mCalendar.timeInMillis
     mCalendar.set(mYear + 1, 11, 31)
     mDatePickerDialog.datePicker.maxDate = mCalendar.timeInMillis

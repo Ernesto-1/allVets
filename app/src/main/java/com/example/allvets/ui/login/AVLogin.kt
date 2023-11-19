@@ -58,7 +58,6 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     inclusive = true
                 }
             }
-            Log.d("UserId",  state.isUserAutenticate?.uid.toString())
             sharedPreferences.edit()
                 .putString(
                     "myUserId",

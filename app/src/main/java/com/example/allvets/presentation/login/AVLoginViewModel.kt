@@ -36,11 +36,8 @@ class AVLoginViewModel @Inject constructor(private val useCase: AVLoginUseCase) 
                                     message = if (result.data == null) "No existe registro o se encuentra en validacion" else "",
                                     loading = false
                                 )
-
-                                Log.d("PET", result.data.toString())
                             }
                             is Resource.Failure -> {
-                                Log.d("PET", result.exception.toString())
                                 state =
                                     if (result.exception.message?.contains("The password is invalid or the user does not have a password") == true || result.exception.message?.contains("There is no user record corresponding to this identifier") == true  ) {
                                         state.copy(
