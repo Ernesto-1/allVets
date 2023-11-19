@@ -22,4 +22,5 @@ val avPurple = Color(0xFFB59BCF)
 
 val avGrayShadow = Color(0x40000000)
 val avGrayBorder = Color(0x1A000000)
+val avBorderSelected = Color(0x805FA5C4)
 

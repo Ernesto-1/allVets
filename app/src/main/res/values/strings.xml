@@ -7,4 +7,8 @@
 
     <string name="label_show_medical_record">Ver expediente</string>
     <string name="label_add_medical_diagnosis">Agregar diagnostico</string>
+
+    <!--Profile-->
+    <string name="profile_coming_soon">Tendremos nuevas \n funcionalidades muy \n pronto.</string>
+    <string name="profile_logout">Cerrar sesión</string>
 </resources>

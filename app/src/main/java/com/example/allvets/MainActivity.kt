@@ -1,5 +1,6 @@
 package com.example.allvets
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,6 +31,7 @@ import com.example.allvets.ui.login.AVLogin
 import com.example.allvets.ui.medicalRecord.AVMedicalRecord
 import com.example.allvets.ui.navigation.Menu
 import com.example.allvets.ui.navigation.Route
+import com.example.allvets.ui.profile.AVProfile
 import com.example.allvets.ui.theme.AllVetsTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -45,8 +48,8 @@ class MainActivity : ComponentActivity() {
                 var selectMenu by rememberSaveable { mutableStateOf("Inicio") }
                 val items = listOf(
                     Menu(Route.AVHOME, Icons.Filled.Home, "Inicio"),
-
-                    )
+                    Menu(Route.AVPROFILE, Icons.Filled.Person, "Perfil")
+                )
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -55,7 +58,8 @@ class MainActivity : ComponentActivity() {
                         val navBackStackEntry by navigationController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
                         if (currentDestination?.route in listOf(
-                                Route.AVHOME
+                                Route.AVHOME,
+                                Route.AVPROFILE
                             )
                         ) {
                             if (currentDestination?.route == Route.AVHOME) {
@@ -126,6 +130,15 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         navigationController.navigateUp()
                                     }
+                                }
+                            }
+
+                            composable(Route.AVPROFILE) {
+                                AVProfile {
+                                    val intent =
+                                        Intent(applicationContext, MainActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
                                 }
                             }
                         }

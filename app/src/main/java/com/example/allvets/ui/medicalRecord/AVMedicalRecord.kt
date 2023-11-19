@@ -1,5 +1,6 @@
 package com.example.allvets.ui.medicalRecord
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,9 +8,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,11 +33,21 @@ fun AVMedicalRecord(
 
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
+    var selectedItem by rememberSaveable { mutableStateOf("") }
 
     val state = vm.state
 
     LaunchedEffect(key1 = state.medicalRecordData == null, key2 = idPet) {
         vm.onEvent(AVMedicalRecordEvent.GetMedicalRecord(idUser, idPet))
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { sheetState.currentValue }
+            .collect {
+                if(it == ModalBottomSheetValue.Hidden ){
+                    selectedItem = ""
+                }
+            }
     }
 
     AllVetsTheme {
@@ -66,7 +76,7 @@ fun AVMedicalRecord(
 
                                 AVMedicalRecordCommon(
                                     data = state.medicalRecordSelect.value,
-                                    recordData = state.medicalRecordData.record
+                                    recordData = state.medicalRecordData.record,
                                 )
 
                             }
@@ -86,8 +96,11 @@ fun AVMedicalRecord(
                                     date = convertTimestampToString(it.date as Timestamp),
                                     reason = it.medicalMatter,
                                     vetLicense = "Ced.Prof. ${it.license}"
-                                )
+                                ),
+                                isSelected = selectedItem == it.id
                             ) {
+                                Log.i("TAG_vets", "AVMedicalRecord: $it")
+                                selectedItem = it.id
                                 state.medicalRecordSelect.value = it
                                 scope.launch {
                                     sheetState.show()

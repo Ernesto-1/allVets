@@ -66,6 +66,7 @@ fun DocumentSnapshot?.mapToVaccinationData(): VaccinationData {
 }
 
 data class RecordData(
+    val id: String = "",
     val medicalMatter: String = "",
     val license: String = "",
     val comments: String = "",
@@ -89,6 +90,7 @@ fun DocumentSnapshot?.mapToMedicalRecordData(): RecordData {
         return RecordData()
     }
 
+    val idRecord = this.reference.id
     val medicalMatter = getString("Asunto") ?: ""
     val licence = getString("CedulaP") ?: ""
     val comments = getString("Comentarios") ?: ""
@@ -111,7 +113,7 @@ fun DocumentSnapshot?.mapToMedicalRecordData(): RecordData {
     }
 
     return RecordData(
-        medicalMatter, licence, comments, diagnosis, date, treatment, medicalRecordList
+        idRecord, medicalMatter, licence, comments, diagnosis, date, treatment, medicalRecordList
     )
 }
 

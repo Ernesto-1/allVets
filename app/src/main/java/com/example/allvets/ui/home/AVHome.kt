@@ -51,7 +51,6 @@ import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import java.util.*
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewModel()) {
@@ -93,6 +92,14 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                 idVet = myUserId.toString()
             )
         )
+    }
+
+    state.dataUser?.name?.let {
+        LaunchedEffect(key1 = state.dataUser?.name) {
+            if (state.dataUser?.name?.isNotEmpty() == true) {
+                sharedPreferences.edit().putString("nickName", state.dataUser!!.name).apply()
+            }
+        }
     }
 
     mDatePickerDialog.datePicker.minDate = mCalendar.timeInMillis
@@ -309,7 +316,6 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                 .background(backgroundAll),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Hola soy el inicio")
             AVTabs(
                 options = stringArrayResource(id = R.array.taps_optoins_coupons),
                 tabSelected = selectedTabCoupons,

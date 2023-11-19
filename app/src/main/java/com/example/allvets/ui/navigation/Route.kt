@@ -5,4 +5,5 @@ object Route {
     const val PASignUp = "PASignUp"
     const val AVLOGIN = "PALogin"
     const val AVMEDICAL_RECORD = "PALogin"
+    const val AVPROFILE = "AVPerfil"
 }
