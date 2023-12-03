@@ -1,8 +1,8 @@
 package com.example.allvets.data.remote.home
 
-import android.util.Log
 import com.example.allvets.presentation.home.SendInfoDate
-import com.google.firebase.auth.FirebaseAuth
+import com.example.allvets.utils.AppConstans.ConstantsCB.DATES_COLLECTION
+import com.example.allvets.utils.AppConstans.ConstantsCB.VETS_COLLECTION
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -14,7 +14,9 @@ class AVHomeDataSource @Inject constructor(
 
     suspend fun getPatients(idConsult: String): List<DocumentSnapshot?> {
         val userPetsCollection =
-            firebaseFirestore.collection("Citas").whereEqualTo("idConsultorio", idConsult)
+            firebaseFirestore
+                .collection(DATES_COLLECTION)
+                .whereEqualTo("idConsultorio", idConsult)
         return try {
             val getDates = userPetsCollection.get().await()
             getDates.documents
@@ -24,7 +26,9 @@ class AVHomeDataSource @Inject constructor(
     }
 
     suspend fun getMyUser(idUser: String): DocumentSnapshot? {
-        return firebaseFirestore.collection("Veterinarios").document(idUser).get()
+        return firebaseFirestore
+            .collection(VETS_COLLECTION)
+            .document(idUser).get()
             .await()
     }
 
@@ -39,7 +43,8 @@ class AVHomeDataSource @Inject constructor(
             } else {
                 mapOf("idVet" to dataSned.idVet, "status" to dataSned.status)
             }
-            firebaseFirestore.collection("Citas").document(dataSned.idDate)
+            firebaseFirestore.collection(DATES_COLLECTION)
+                .document(dataSned.idDate)
                 .update(updateDataDate).await()
             true
         } catch (e: Exception) {

@@ -18,24 +18,21 @@ class AVMedicalRecordVM @Inject constructor(val ucGetRecord: GetMedicalRecordUse
     var state by mutableStateOf(AVMedicalRecordState())
         private set
 
-  /*  init {
-        onEvent(AVMedicalRecordEvent.GetMedicalRecord("6oPu7hfDz8bRDFepHrWG"))
-    }*/
-
     fun onEvent(event: AVMedicalRecordEvent) {
         when (event) {
             is AVMedicalRecordEvent.GetMedicalRecord -> {
                 viewModelScope.launch {
                     ucGetRecord.invoke(event.idUser,event.idPet).collect() { result ->
-                        when (result) {
+                        state = when (result) {
                             is Resource.Loading -> {
-
+                                state.copy(loading = true)
                             }
                             is Resource.Failure -> {
-
+                                state.copy(loading = false)
                             }
                             is Resource.Success -> {
-                                state = state.copy(
+                                state.copy(
+                                    loading = false,
                                     medicalRecordData = result.data
                                 )
                             }

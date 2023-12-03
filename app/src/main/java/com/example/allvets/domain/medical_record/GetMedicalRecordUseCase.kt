@@ -17,7 +17,9 @@ class GetMedicalRecordUseCase @Inject constructor(private val repository: AVMedi
                 val doc = repository.getMedicalRecord(idUser = idUser, idPet = idPet)
                 val data = MedicalRecordData(
                     patient = doc.data.toDataPatient().patient,
-                    record = doc.medicalRecord.toDataMedicalReport().record
+                    record = doc.medicalRecord.toDataMedicalReport().record.sortedByDescending {
+                        it.date
+                    }
                 )
                 emit(Resource.Success(data))
             } catch (ex: Exception) {

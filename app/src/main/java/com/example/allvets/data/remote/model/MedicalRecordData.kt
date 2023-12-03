@@ -97,16 +97,16 @@ fun DocumentSnapshot?.mapToMedicalRecordData(): RecordData {
     val diagnosis = getString("Diagnostico") ?: ""
     val date = getTimestamp("Fecha")
     val treatment: ArrayList<*>? = get("Tratamiento") as? ArrayList<*>
-    val vaccines: ArrayList<*>? = get("Cartilla2") as? ArrayList<*>
+    val vaccines: ArrayList<*>? = get("Cartilla") as? ArrayList<*>
     val medicalRecordList: ArrayList<Medicamento> = arrayListOf()
 
     vaccines?.forEach { vacc ->
         val hash = vacc as HashMap<*, *>
         medicalRecordList.add(
             Medicamento(
-                nombre = hash["nombre"].toString(),
-                numero_medicamento = hash["numero_medicamento"].toString(),
-                tipo = hash["tipo"].toString()
+                nombre = hash["treatment"].toString(),
+                numero_medicamento = hash["code"].toString(),
+                tipo = hash["type"].toString()
 
             )
         )

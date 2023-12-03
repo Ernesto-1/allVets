@@ -1,6 +1,5 @@
 package com.example.allvets.presentation.home
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,14 +24,20 @@ class AVHomeViewModel @Inject constructor(val useCase: AVHomeUseCase) : ViewMode
                     useCase.invoke(event.idUser).collect() { result ->
                         when (result) {
                             is Resource.Loading -> {
-                                Log.d("UserLoading", "Loading")
+                                state = state.copy(
+                                    loadingUser = true
+                                )
                             }
                             is Resource.Failure -> {
-                                Log.d("UserFailure", result.exception.message.toString())
+                                state = state.copy(
+                                    loadingUser = false
+                                )
                             }
                             is Resource.Success -> {
-                                Log.d("UserSuccess", result.data.toString())
-                                state = state.copy(dataUser = result.data)
+                                state = state.copy(
+                                    loadingUser = false,
+                                    dataUser = result.data
+                                )
                             }
                         }
                     }
@@ -43,14 +48,16 @@ class AVHomeViewModel @Inject constructor(val useCase: AVHomeUseCase) : ViewMode
                     useCase.getAllQuotes(event.idConsult).collect() { result ->
                         when (result) {
                             is Resource.Loading -> {
-                                Log.d("AllQuotesLoading1", "Loading")
+                                state = state.copy(loadingQuotes = true)
                             }
                             is Resource.Failure -> {
-                                Log.d("AllQuotesFailure1", result.exception.message.toString())
+                                state = state.copy(loadingQuotes = false)
                             }
                             is Resource.Success -> {
-                                state = state.copy(dataAllQuotes = result.data)
-                                Log.d("AllQuotesSuccess1", result.data.toString())
+                                state = state.copy(
+                                    loadingQuotes = false,
+                                    dataAllQuotes = result.data
+                                )
                             }
                         }
                     }
@@ -68,7 +75,6 @@ class AVHomeViewModel @Inject constructor(val useCase: AVHomeUseCase) : ViewMode
                             }
                             is Resource.Success -> {
                                 state = state.copy(isSendDate = result.data)
-                                Log.d("AllQuotesSuccess2", result.data.toString())
                             }
                         }
                     }
@@ -86,10 +92,24 @@ class AVHomeViewModel @Inject constructor(val useCase: AVHomeUseCase) : ViewMode
     ) {
         viewModelScope.launch {
             val allList =
-                state.dataAllQuotes.filter { it.status.toString() != "confirmada" }.toMutableList()
-            val filterList =
-                state.dataAllQuotes.filter { it.status.toString() == "confirmada" || it.affairs.toString() == "Emergencia" }
+                state.dataAllQuotes.filter {
+                    it.status.toString() != "confirmada" && it.status.toString() != "completada"
+                }
                     .toMutableList()
+            val filterList =
+                state.dataAllQuotes.filter {
+                    it.status.toString() == "confirmada" ||
+                            it.status.toString() == "completada" ||
+                            it.affairs.toString() == "Emergencia"
+                }.sortedWith(
+                    compareBy(
+                        { it.status },
+                        { it.affairs }
+                    )
+                ).asReversed().toMutableList()
+
+
+
             state = when (tabSelect) {
                 0 -> state.copy(dataFilterQuotes = allList)
                 1 -> state.copy(dataFilterQuotes = filterList)

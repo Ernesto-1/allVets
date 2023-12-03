@@ -1,11 +1,12 @@
 package com.example.allvets.ui.medicalRecord
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
@@ -18,6 +19,7 @@ import com.example.allvets.presentation.medicalRecord.AVMedicalRecordEvent
 import com.example.allvets.presentation.medicalRecord.AVMedicalRecordVM
 import com.example.allvets.ui.templates.*
 import com.example.allvets.ui.theme.*
+import com.example.allvets.utils.LoadingDialog
 import com.example.allvets.utils.convertTimestampToString
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
@@ -55,16 +57,21 @@ fun AVMedicalRecord(
             Modifier.fillMaxSize(),
             topBar = {
                 AVTopBar(
+                    titleScreen = "Expediente",
                     name = state.medicalRecordData?.patient?.firstOrNull()?.name ?: "",
                     onBack = onBack
                 )
             }
         ) {
+            if (state.loading) {
+                LoadingDialog()
+            }
             state.medicalRecordData?.let { listData ->
                 ModalBottomSheetLayout(
                     sheetState = sheetState,
                     sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    modifier = Modifier.padding(top = 0.dp), sheetContent = {
+                    modifier = Modifier.padding(top = 0.dp),
+                    sheetContent = {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -73,16 +80,14 @@ fun AVMedicalRecord(
                                 .wrapContentWidth(unbounded = false)
                                 .wrapContentHeight(unbounded = true)
                         ) {
+                            HeaderBottomSheet()
                             Column(
-                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
+                                modifier = Modifier
+                                    .padding(top = 36.dp, bottom = 16.dp)
+                                    .height(600.dp)
+                                    .verticalScroll(rememberScrollState()),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                HeaderBottomSheet()
-
-                                Log.i(
-                                    "TAG_vets",
-                                    "AVMedicalRecord: ${state.medicalRecordData.patient}"
-                                )
                                 AVMedicalRecordCommon(
                                     data = state.medicalRecordSelect.value,
                                     recordData = state.medicalRecordData.record,
@@ -107,7 +112,6 @@ fun AVMedicalRecord(
                                 ),
                                 isSelected = selectedItem == it.id
                             ) {
-                                Log.i("TAG_vets", "AVMedicalRecord: $it")
                                 selectedItem = it.id
                                 state.medicalRecordSelect.value = it
                                 scope.launch {

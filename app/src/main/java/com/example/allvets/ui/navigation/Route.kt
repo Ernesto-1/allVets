@@ -6,4 +6,5 @@ object Route {
     const val AVLOGIN = "PALogin"
     const val AVMEDICAL_RECORD = "PALogin"
     const val AVPROFILE = "AVPerfil"
+    const val AVDIAGNOSIS = "AVDiagnosis"
 }

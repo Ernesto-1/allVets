@@ -3,7 +3,7 @@ package com.example.allvets.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
+val Purple500 = Color(0xFF92C9D1)
 val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 val Orange = Color(0xFFF7AD86)
@@ -23,4 +23,8 @@ val avPurple = Color(0xFFB59BCF)
 val avGrayShadow = Color(0x40000000)
 val avGrayBorder = Color(0x1A000000)
 val avBorderSelected = Color(0x805FA5C4)
+
+val avBlack = Color(0xFF292D32)
+
+val AVError = Color(0xFFF0493D)
 

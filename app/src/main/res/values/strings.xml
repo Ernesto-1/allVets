@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">allVets</string>
-    <string-array name="taps_optoins_coupons">
+    <string-array name="options_home">
         <item>Solicitudes</item>
         <item>Mis pacientes</item>
+    </string-array>
+
+    <string-array name="options_diagnosis">
+        <item>Cartilla</item>
+        <item>Consulta</item>
     </string-array>
 
     <string name="label_show_medical_record">Ver expediente</string>

@@ -22,7 +22,7 @@ import com.example.allvets.ui.theme.stHeader
 import com.example.allvets.utils.capitalizeName
 
 @Composable
-fun AVTopBar(name: String, onBack: () -> Unit = {}) {
+fun AVTopBar(titleScreen: String, name: String, onBack: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .padding(horizontal = 24.dp, vertical = 16.dp)
@@ -39,7 +39,7 @@ fun AVTopBar(name: String, onBack: () -> Unit = {}) {
             contentScale = ContentScale.FillWidth,
             colorFilter = ColorFilter.tint(avGray)
         )
-        ItemTextHeader(label = "Expediente", valueLabel = name)
+        ItemTextHeader(label = titleScreen, valueLabel = name)
     }
 }
 

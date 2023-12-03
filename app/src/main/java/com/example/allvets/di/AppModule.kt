@@ -2,6 +2,8 @@ package com.example.allvets.di
 
 import android.content.Context
 import com.example.allvets.domain.WebService
+import com.example.allvets.domain.diagnosis.AVDiagnosis
+import com.example.allvets.domain.diagnosis.AVDiagnosisImpl
 import com.example.allvets.domain.home.AVHomeRepo
 import com.example.allvets.domain.home.AVHomeRepoImpl
 import com.example.allvets.domain.login.AVLoginRepo
@@ -35,6 +37,9 @@ abstract class AppModule {
 
     @Binds
     abstract fun providesMedicalRecordRepository(repoHome: AVMedicalRecordImpl): AVMedicalRecordRepo
+
+    @Binds
+    abstract fun providesDiagnosisRepository(repoDiagnosis: AVDiagnosisImpl): AVDiagnosis
 
     companion object {
 

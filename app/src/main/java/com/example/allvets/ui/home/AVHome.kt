@@ -1,7 +1,6 @@
 package com.example.allvets.ui.home
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,16 +43,18 @@ import com.example.allvets.presentation.home.SendInfoDate
 import com.example.allvets.ui.navigation.Route
 import com.example.allvets.ui.templates.*
 import com.example.allvets.ui.theme.*
-import com.example.allvets.utils.convertDateTimeToTimestamp
-import com.example.allvets.utils.convertTimestampToString2
-import com.example.allvets.utils.datePicker
+import com.example.allvets.utils.*
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewModel()) {
+fun AVHome(
+    navController: NavController,
+    isRefreshData: Boolean,
+    viewModel: AVHomeViewModel = hiltViewModel()
+) {
     val date = rememberSaveable { mutableStateOf("") }
     val state = viewModel.state
     val context = LocalContext.current
@@ -69,19 +70,22 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
     mCalendar.time = Date()
     val mDatePickerDialog = datePicker(date = date, context = context, focusManager = focusManager)
     val timeSelect = remember { mutableStateOf("") }
-    var selectedTabCoupons by rememberSaveable { mutableStateOf("Solicitudes") }
+    var selectedTab by rememberSaveable { mutableStateOf("Solicitudes") }
 
 
     LaunchedEffect(Unit) {
-        if (myUserId?.isNotEmpty() == true) {
+        if (myUserId?.isNotEmpty() == true && state.dataUser?.name?.isEmpty() == true) {
             viewModel.onEvent(AVHomeEvent.GetMyUser(myUserId))
         }
     }
 
     LaunchedEffect(state.dataUser, state.isSendDate == true) {
-        if (state.dataUser?.consult?.isNotEmpty() == true || state.isSendDate == true) {
+        if ((state.dataUser?.consult?.isNotEmpty() == true && state.dataAllQuotes.isEmpty() || state.isSendDate == true) || isRefreshData) {
             viewModel.onEvent(AVHomeEvent.GetAllQuotes(state.dataUser?.consult.toString()))
             state.isSendDate = false
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                key = "REFRESH", value = ""
+            )
         }
     }
 
@@ -93,7 +97,6 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
             )
         )
     }
-    Log.i("TAG_vets ", "AVHome: ${state.dataUser}")
 
     state.dataUser?.name?.let {
         LaunchedEffect(key1 = state.dataUser?.name) {
@@ -118,11 +121,14 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                     .wrapContentWidth(unbounded = false)
                     .wrapContentHeight(unbounded = true)
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     HeaderBottomSheet()
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = state.dataQuotesSelected.value.patient.toString(),
+                            text = state.dataQuotesSelected.value.patient.toString()
+                                .capitalizeName(),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -243,8 +249,8 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                                     timeSelect.value = MyTime()
                                 } else {
                                     timeSelect.value = ""
-
                                 }
+
                                 ButtonDefault(
                                     textButton = if (isChecked) "Enviar" else "Confirmar",
                                     radius = 8.dp, modifier = Modifier.padding(vertical = 12.dp)
@@ -277,6 +283,9 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(modifier = Modifier.clickable {
+                                        scope.launch {
+                                            sheetState.hide()
+                                        }
                                         navController.navigate("${Route.AVMEDICAL_RECORD}/${state.dataQuotesSelected.value.userId}/${state.dataQuotesSelected.value.idPatient}")
                                     }) {
                                         Text(
@@ -290,18 +299,33 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                                             tint = BackGroud
                                         )
                                     }
-                                    Row(modifier = Modifier.clickable {
-
+                                    val isCompleted =
+                                        state.dataQuotesSelected.value.status == "completada"
+                                    Row(modifier = Modifier.clickable(enabled = !isCompleted) {
+                                        if (!isCompleted) {
+                                            scope.launch {
+                                                sheetState.hide()
+                                            }
+                                            navController.navigate(
+                                                "${Route.AVDIAGNOSIS}/" +
+                                                        "${state.dataQuotesSelected.value.userId}/" +
+                                                        "${state.dataQuotesSelected.value.patient}/" +
+                                                        "${state.dataQuotesSelected.value.idPatient}/" +
+                                                        "${state.dataQuotesSelected.value.affairs}/" +
+                                                        "2ADSDASDDFF/" +
+                                                        "${state.dataQuotesSelected.value.id}"
+                                            )
+                                        }
                                     }) {
                                         Text(
                                             text = stringResource(id = R.string.label_add_medical_diagnosis),
-                                            color = BtnBlue,
+                                            color = if (isCompleted) greyText else BtnBlue,
                                             modifier = Modifier.padding(end = 8.dp)
                                         )
                                         Icon(
                                             imageVector = Icons.Filled.AddCircle,
                                             contentDescription = "",
-                                            tint = Alertsuccess
+                                            tint = if (isCompleted) greyText else Alertsuccess
                                         )
                                     }
                                 }
@@ -317,6 +341,10 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                 .background(backgroundAll),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (state.loadingUser || state.loadingQuotes) {
+                LoadingDialog()
+            }
+
             Row(
                 modifier = Modifier
                     .padding(16.dp)
@@ -326,10 +354,10 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                 Text(text = "Hola ${state.dataUser?.name}!", fontSize = 16.sp)
             }
             AVTabs(
-                options = stringArrayResource(id = R.array.taps_optoins_coupons),
-                tabSelected = selectedTabCoupons,
+                options = stringArrayResource(id = R.array.options_home),
+                tabSelected = selectedTab,
             ) { index, tab ->
-                selectedTabCoupons = tab.uppercase()
+                selectedTab = tab.uppercase()
                 state.tabSelected.value = index
                 state.dataFilterQuotes = mutableListOf()
             }
@@ -346,7 +374,6 @@ fun AVHome(navController: NavController, viewModel: AVHomeViewModel = hiltViewMo
                     }
                 }
             }
-
         }
     }
 }

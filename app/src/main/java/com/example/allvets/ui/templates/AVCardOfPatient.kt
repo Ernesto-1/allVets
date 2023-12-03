@@ -13,23 +13,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.allvets.R
 import com.example.allvets.data.remote.model.Quotes
-import com.example.allvets.ui.theme.Alertsuccess
-import com.example.allvets.ui.theme.RedAlert
-import com.example.allvets.ui.theme.greyText
-import com.example.allvets.ui.theme.statusPending
-import com.example.allvets.utils.AppConstans
 import com.example.allvets.utils.capitalizeName
 import com.example.allvets.utils.convertTimestampToString2
-
+import com.example.allvets.utils.getColorStatus
+import com.example.allvets.utils.getIconPet
 
 @Preview(showBackground = true)
 @Composable
@@ -48,18 +42,16 @@ fun AVCardOfPatient(
                 .fillMaxWidth()
                 .clickable(onClick = {
                     onClickPatient.invoke()
-
-                }
-                )
+                })
                 .padding(vertical = 8.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column() {
                 Text(
                     text = if (tabSelect == 0) dataCard.status?.capitalizeName()
-                        .toString() else dataCard.affairs.toString(),
+                        .toString() else if (dataCard.status == "completada") dataCard.status.capitalizeName() else dataCard.affairs.toString(),
                     modifier = Modifier.fillMaxWidth(),
-                    color = if (tabSelect == 0) if (dataCard.status.toString() == "pendiente") statusPending else greyText else if (dataCard.affairs.toString() == "Consulta") Alertsuccess else RedAlert,
+                    color = getColorStatus(tabSelect, dataCard.status, dataCard.affairs),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.End
@@ -67,21 +59,7 @@ fun AVCardOfPatient(
                 Row {
                     Image(
                         painter = painterResource(
-                            id = if (tabSelect == 0) when (dataCard.pet) {
-                                AppConstans.SpeciesConstants.DOG -> R.drawable.ic_dog_face
-                                AppConstans.SpeciesConstants.CAT -> R.drawable.ic_cat
-                                AppConstans.SpeciesConstants.BIRD -> R.drawable.ic_bird
-                                AppConstans.SpeciesConstants.FISH -> R.drawable.ic_fish
-                                else -> R.drawable.ic_dog_face
-                            } else {
-                                when (dataCard.pet) {
-                                    AppConstans.SpeciesConstants.DOG -> R.drawable.ic_dog_vet
-                                    AppConstans.SpeciesConstants.CAT -> R.drawable.ic_cat_vet
-                                    AppConstans.SpeciesConstants.BIRD -> R.drawable.ic_bird_vet
-                                    AppConstans.SpeciesConstants.FISH -> R.drawable.ic_fish_vet
-                                    else -> R.drawable.ic_dog_vet
-                                }
-                            }
+                            id = getIconPet(tabSelect, dataCard.pet)
                         ),
                         contentDescription = "Image_patient",
                         modifier = Modifier.width(60.dp),

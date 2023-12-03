@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -50,6 +51,11 @@ fun AVMedicalRecordCommon(data: RecordData, recordData: List<RecordData>) {
             RecordDataItem(title = "Tratamiento", diagnosisList = record.treatment)
 
             RecordList(data = recordData)
+
+            Divider(
+                modifier = Modifier.height(8.dp),
+                color = Color.Transparent
+            )
         }
     }
 }
@@ -57,21 +63,32 @@ fun AVMedicalRecordCommon(data: RecordData, recordData: List<RecordData>) {
 @Composable
 fun DataPatient(data: RecordData) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
             text = data.medicalMatter,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             style = stTitle
         )
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
         ) {
             data.date?.let { date ->
-                ItemText(label = "Fecha ", valueLabel = convertTimestampToString(date))
-                ItemText(label = "CP Medico ", valueLabel = data.license )
+                ItemText(
+                    modifier = Modifier.weight(1f),
+                    label = "Fecha ",
+                    valueLabel = convertTimestampToString(date)
+                )
+                ItemText(
+                    modifier = Modifier.weight(1f),
+                    label = "CP Medico ",
+                    valueLabel = data.license
+                )
             }
         }
     }
@@ -89,9 +106,7 @@ fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: Arra
         )
         diagnosis?.let {
             ContainerCard {
-                Text(
-                    text = it, modifier = Modifier.padding(16.dp)
-                )
+                Text(text = it)
             }
         }
 
@@ -100,12 +115,13 @@ fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: Arra
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                diagnosisList.forEach { itemTreat ->
-                    ContainerCard {
-                        Text(
-                            text = "$itemTreat",
-                            modifier = Modifier.padding(16.dp)
-                        )
+                diagnosisList.forEachIndexed { index, itemTreat ->
+                    if (itemTreat.toString().isNotEmpty()) {
+                        ContainerCard {
+                            Text(
+                                text = "${index + 1}- $itemTreat"
+                            )
+                        }
                     }
                 }
             }
@@ -135,7 +151,8 @@ fun RecordList(data: List<RecordData>? = null) {
                         RecordItem(
                             type = medicine.tipo,
                             name = medicine.nombre,
-                            numMedicine = medicine.numero_medicamento
+                            numMedicine = medicine.numero_medicamento,
+                            nextAplication = ""
                         )
                     }
                 }
@@ -145,30 +162,42 @@ fun RecordList(data: List<RecordData>? = null) {
 }
 
 @Composable
-fun RecordItem(type: String, name: String, numMedicine: String) {
+fun RecordItem(
+    type: String,
+    name: String,
+    numMedicine: String,
+    nextAplication: String
+) {
     ContainerCard {
         Row(
             modifier = Modifier
-                .padding(12.dp)
-                .fillMaxSize(),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val iconRecord = if (type == AppConstans.SpeciesConstants.TYPE_MEDICINE)
+            val iconRecord = if (type.lowercase() == AppConstans.SpeciesConstants.TYPE_MEDICINE)
                 R.drawable.ic_medicine else R.drawable.ic_vaccine
             Image(
                 painter = painterResource(
                     id = iconRecord
                 ),
                 contentDescription = "icon_vaccine",
-                modifier = Modifier.height(50.dp),
-                contentScale = ContentScale.FillHeight
+                modifier = Modifier.width(50.dp),
+                contentScale = ContentScale.FillWidth
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                ItemText(label = "Tipo: ", valueLabel = type )
-                ItemText(label = "Tratamiento: ", valueLabel =("$name $numMedicine"))
+                ItemText(label = "Tipo: ", valueLabel = type)
+                ItemText(label = "Tratamiento: ", valueLabel = name)
+                ItemText(
+                    modifier = Modifier.padding(end = 50.dp),
+                    label = "",
+                    valueLabel = numMedicine,
+                    align = TextAlign.Center
+                )
+                ItemText(label = "Próxima aplicación: ", valueLabel = nextAplication)
             }
         }
     }
@@ -179,35 +208,48 @@ fun ContainerCard(content: @Composable () -> Unit = {}) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .toStyleCard(),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
     ) {
-        content()
+        Box(modifier = Modifier.padding(12.dp)) {
+            content()
+        }
     }
 }
 
 @Composable
-fun ItemText(label: String, valueLabel:String) {
-    Text(
-        text = buildAnnotatedString {
-            append(label)
-            withStyle(
-                style = SpanStyle(
-                    fontWeight = FontWeight.SemiBold
-                )
-            ) {
-                append(valueLabel.capitalizeName())
-            }
-        },
-        style = stText.copy(
-            textAlign = TextAlign.Left
+fun ItemText(
+    modifier: Modifier = Modifier,
+    label: String,
+    valueLabel: String,
+    align: TextAlign = TextAlign.Left
+) {
+    if (valueLabel.isNotEmpty()) {
+        Text(
+            text = buildAnnotatedString {
+                append(label)
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    append(valueLabel.capitalizeName())
+                }
+            },
+            style = stText.copy(
+                textAlign = align
+            ),
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
         )
-    )
+    }
 }
 
-private fun Modifier.toStyleCard(): Modifier {
+fun Modifier.toStyleCard(): Modifier {
     return this
         .shadow(
             elevation = 4.dp,

@@ -13,4 +13,14 @@ object AppConstans {
         const val TYPE_MEDICINE = "medicamento"
     }
 
+    object ConstantsCB {
+        const val USERS_COLLECTION = "Users"
+        const val PETS_COLLECTION = "Mascotas"
+        const val RECORD_COLLECTION = "Expediente"
+        const val CARD_COLLECTION = "Cartilla"
+        const val DATES_COLLECTION = "Citas"
+        const val VETS_COLLECTION = "Veterinarios"
+
+    }
+
 }
