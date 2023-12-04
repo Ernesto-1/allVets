@@ -1,5 +1,6 @@
 package com.example.allvets.ui.templates
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -34,7 +35,7 @@ import com.example.allvets.utils.capitalizeName
 import com.example.allvets.utils.convertTimestampToString
 
 @Composable
-fun AVMedicalRecordCommon(data: RecordData, recordData: List<RecordData>) {
+fun AVMedicalRecordCommon(data: RecordData) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -96,32 +97,39 @@ fun DataPatient(data: RecordData) {
 }
 
 @Composable
-fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: List<*>? = null) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = title,
-            style = stTitle.copy(fontSize = 14.sp)
-        )
-        diagnosis?.let {
-            ContainerCard {
-                Text(text = it)
+fun RecordDataItem(title: String, diagnosis: String? = "", diagnosisList: List<*>? = null) {
+    if (diagnosis?.isNotEmpty() == true || (diagnosisList?.size ?:0) > 0) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = title,
+                style = stTitle.copy(fontSize = 14.sp)
+            )
+            diagnosis?.let {
+                if (it.isNotEmpty()) {
+                    ContainerCard {
+                        Text(text = it)
+                    }
+                }
             }
-        }
 
-        diagnosisList?.let {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                diagnosisList.forEachIndexed { index, itemTreat ->
-                    if (itemTreat.toString().isNotEmpty()) {
-                        ContainerCard {
-                            Text(
-                                text = "${index + 1}- $itemTreat"
-                            )
+            diagnosisList?.let {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    diagnosisList.forEachIndexed { index, itemTreat ->
+                        Log.i("TAG_diagnosis", "RecordDataItem: $itemTreat")
+                        if (itemTreat.toString().isNotEmpty()) {
+                            Log.i("TAG_diagnosis", "RecordDataItem: $index - $itemTreat")
+
+                            ContainerCard {
+                                Text(
+                                    text = "${index + 1}- $itemTreat"
+                                )
+                            }
                         }
                     }
                 }
@@ -133,7 +141,7 @@ fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: List
 @Composable
 fun RecordList(data: List<Medicamento>? = null) {
     data?.let { listVaccine ->
-        if(listVaccine.isNotEmpty()) {
+        if (listVaccine.isNotEmpty()) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)

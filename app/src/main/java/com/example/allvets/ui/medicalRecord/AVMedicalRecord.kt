@@ -90,7 +90,6 @@ fun AVMedicalRecord(
                             ) {
                                 AVMedicalRecordCommon(
                                     data = state.medicalRecordSelect.value,
-                                    recordData = state.medicalRecordData.record,
                                 )
                             }
                         }
