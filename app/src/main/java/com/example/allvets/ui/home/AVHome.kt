@@ -283,7 +283,12 @@ fun AVHome(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(modifier = Modifier.clickable {
-                                        navController.navigate("${Route.AVMEDICAL_RECORD}/${state.dataQuotesSelected.value.userId}/${state.dataQuotesSelected.value.idPatient}")
+                                        navController.navigate(
+                                            "${Route.AVMEDICAL_RECORD}/" +
+                                                    "${state.dataQuotesSelected.value.userId}/" +
+                                                    "${state.dataQuotesSelected.value.idPatient}/" +
+                                                    "${state.dataQuotesSelected.value.patient}"
+                                        )
                                         scope.launch {
                                             sheetState.hide()
                                         }

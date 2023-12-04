@@ -2,7 +2,6 @@ package com.example.allvets.domain.medical_record
 
 import com.example.allvets.data.remote.model.MedicalRecordData
 import com.example.allvets.data.remote.model.toDataMedicalReport
-import com.example.allvets.data.remote.model.toDataPatient
 import com.example.allvets.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,7 +15,6 @@ class GetMedicalRecordUseCase @Inject constructor(private val repository: AVMedi
             try {
                 val doc = repository.getMedicalRecord(idUser = idUser, idPet = idPet)
                 val data = MedicalRecordData(
-                    patient = doc.data.toDataPatient().patient,
                     record = doc.medicalRecord.toDataMedicalReport().record.sortedByDescending {
                         it.date
                     }

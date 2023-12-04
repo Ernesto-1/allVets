@@ -13,14 +13,6 @@ class AVMedicalRecordDataSource @Inject constructor(
 ) {
 
     suspend fun getMedicalRecord(idUser: String, idPet: String): DocumentsRecord {
-        val data = firebaseFirestore
-            .collection(USERS_COLLECTION)
-            .document(idUser)
-            .collection(PETS_COLLECTION)
-            .whereEqualTo("id", idPet)
-            .get()
-            .await()
-
         val medicalRecord = firebaseFirestore
             .collection(USERS_COLLECTION)
             .document(idUser)
@@ -31,7 +23,6 @@ class AVMedicalRecordDataSource @Inject constructor(
             .await()
 
         val result = DocumentsRecord(
-            data = data.documents,
             medicalRecord = medicalRecord.documents
         )
         return result
@@ -39,6 +30,5 @@ class AVMedicalRecordDataSource @Inject constructor(
 }
 
 data class DocumentsRecord(
-    val data: List<DocumentSnapshot?>,
     val medicalRecord: List<DocumentSnapshot?>
 )

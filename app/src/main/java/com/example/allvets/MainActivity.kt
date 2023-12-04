@@ -2,7 +2,6 @@ package com.example.allvets
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -124,7 +123,7 @@ class MainActivity : ComponentActivity() {
                                     navController = navigationController
                                 )
                             }
-                            composable(route = "${Route.AVMEDICAL_RECORD}/{idUser}/{idPet}",
+                            composable(route = "${Route.AVMEDICAL_RECORD}/{idUser}/{idPet}/{name}",
                                 arguments = listOf(navArgument("idUser") {
                                     type = NavType.StringType
                                 },
@@ -135,7 +134,9 @@ class MainActivity : ComponentActivity() {
                             ) { args ->
                                 args.arguments?.getString("idPet")?.let { id ->
                                     val idUser = args.arguments?.getString("idUser") ?: ""
+                                    val namePet = args.arguments?.getString("name") ?: ""
                                     AVMedicalRecord(
+                                        name = namePet,
                                         idUser = idUser,
                                         idPet = id
                                     ) {

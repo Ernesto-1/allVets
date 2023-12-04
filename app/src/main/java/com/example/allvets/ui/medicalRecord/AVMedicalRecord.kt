@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AVMedicalRecord(
     vm: AVMedicalRecordVM = hiltViewModel(),
+    name: String,
     idUser: String,
     idPet: String,
     onBack: () -> Unit = {}
@@ -58,7 +59,7 @@ fun AVMedicalRecord(
             topBar = {
                 AVTopBar(
                     titleScreen = "Expediente",
-                    name = state.medicalRecordData?.patient?.firstOrNull()?.name ?: "",
+                    name = name,
                     onBack = onBack
                 )
             }

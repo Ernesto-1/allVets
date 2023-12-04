@@ -4,31 +4,9 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class MedicalRecordData(
-    val patient: List<PatientMedicalRecord> = listOf(),
     val vaccination: List<VaccinationData> = listOf(),
     val record: List<RecordData> = listOf()
 )
-
-fun List<DocumentSnapshot?>.toDataPatient(): MedicalRecordData {
-    val data = mapNotNull { documentSnapshot ->
-        documentSnapshot.mapToDataPatient()
-    }
-    return MedicalRecordData(
-        patient = data
-    )
-}
-
-fun DocumentSnapshot?.mapToDataPatient(): PatientMedicalRecord {
-    if (this == null || !exists()) {
-        return PatientMedicalRecord(
-            ""
-        )
-    }
-    val name = getString("Nombre") ?: ""
-    return PatientMedicalRecord(
-        name
-    )
-}
 
 data class VaccinationData(
     val expired: Timestamp? = null,
