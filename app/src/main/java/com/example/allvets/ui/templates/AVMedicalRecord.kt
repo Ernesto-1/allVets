@@ -1,6 +1,5 @@
 package com.example.allvets.ui.templates
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -110,7 +109,7 @@ fun RecordDataItem(title: String, diagnosis: String? = "", diagnosisList: List<*
             diagnosis?.let {
                 if (it.isNotEmpty()) {
                     ContainerCard {
-                        Text(text = it)
+                        Text(text = it.capitalizeName())
                     }
                 }
             }
@@ -121,13 +120,10 @@ fun RecordDataItem(title: String, diagnosis: String? = "", diagnosisList: List<*
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     diagnosisList.forEachIndexed { index, itemTreat ->
-                        Log.i("TAG_diagnosis", "RecordDataItem: $itemTreat")
                         if (itemTreat.toString().isNotEmpty()) {
-                            Log.i("TAG_diagnosis", "RecordDataItem: $index - $itemTreat")
-
                             ContainerCard {
                                 Text(
-                                    text = "${index + 1}- $itemTreat"
+                                    text = "${index + 1}- ${itemTreat.toString().capitalizeName()}"
                                 )
                             }
                         }

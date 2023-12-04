@@ -255,6 +255,6 @@ private fun notification() {
         }
         // Get new FCM registration token
         val token = task.result
-        Log.i("TAG_notifications", "notification: Token: $token")
+        Log.i("TAG_notifications", "notificaion: Token: $token")
     })
 }
