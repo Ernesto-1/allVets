@@ -283,10 +283,10 @@ fun AVHome(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(modifier = Modifier.clickable {
+                                        navController.navigate("${Route.AVMEDICAL_RECORD}/${state.dataQuotesSelected.value.userId}/${state.dataQuotesSelected.value.idPatient}")
                                         scope.launch {
                                             sheetState.hide()
                                         }
-                                        navController.navigate("${Route.AVMEDICAL_RECORD}/${state.dataQuotesSelected.value.userId}/${state.dataQuotesSelected.value.idPatient}")
                                     }) {
                                         Text(
                                             text = stringResource(id = R.string.label_show_medical_record),
@@ -303,18 +303,18 @@ fun AVHome(
                                         state.dataQuotesSelected.value.status == "completada"
                                     Row(modifier = Modifier.clickable(enabled = !isCompleted) {
                                         if (!isCompleted) {
-                                            scope.launch {
-                                                sheetState.hide()
-                                            }
                                             navController.navigate(
                                                 "${Route.AVDIAGNOSIS}/" +
                                                         "${state.dataQuotesSelected.value.userId}/" +
                                                         "${state.dataQuotesSelected.value.patient}/" +
                                                         "${state.dataQuotesSelected.value.idPatient}/" +
                                                         "${state.dataQuotesSelected.value.affairs}/" +
-                                                        "2ADSDASDDFF/" +
+                                                        "${state.dataUser?.cedProf}/" +
                                                         "${state.dataQuotesSelected.value.id}"
                                             )
+                                            scope.launch {
+                                                sheetState.hide()
+                                            }
                                         }
                                     }) {
                                         Text(

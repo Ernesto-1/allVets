@@ -23,6 +23,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.allvets.R
+import com.example.allvets.data.remote.model.Medicamento
 import com.example.allvets.data.remote.model.RecordData
 import com.example.allvets.ui.theme.avGrayBorder
 import com.example.allvets.ui.theme.avGrayShadow
@@ -50,7 +51,7 @@ fun AVMedicalRecordCommon(data: RecordData, recordData: List<RecordData>) {
 
             RecordDataItem(title = "Tratamiento", diagnosisList = record.treatment)
 
-            RecordList(data = recordData)
+            RecordList(data = record.medicalRecordList)
 
             Divider(
                 modifier = Modifier.height(8.dp),
@@ -95,7 +96,7 @@ fun DataPatient(data: RecordData) {
 }
 
 @Composable
-fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: ArrayList<*>? = null) {
+fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: List<*>? = null) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -130,29 +131,29 @@ fun RecordDataItem(title: String, diagnosis: String? = null, diagnosisList: Arra
 }
 
 @Composable
-fun RecordList(data: List<RecordData>? = null) {
+fun RecordList(data: List<Medicamento>? = null) {
     data?.let { listVaccine ->
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "Cartilla",
-                style = stTitle.copy(fontSize = 14.sp)
-            )
+        if(listVaccine.isNotEmpty()) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                listVaccine.forEach { itemVaccine ->
-                    itemVaccine.medicalRecordList.forEach { medicine ->
+                Text(
+                    text = "Cartilla",
+                    style = stTitle.copy(fontSize = 14.sp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listVaccine.forEach { itemVaccine ->
                         RecordItem(
-                            type = medicine.tipo,
-                            name = medicine.nombre,
-                            numMedicine = medicine.numero_medicamento,
-                            nextAplication = ""
+                            type = itemVaccine.nombre,
+                            name = itemVaccine.nombre,
+                            numMedicine = itemVaccine.numero_medicamento,
+                            nextAplication = itemVaccine.nextAplication
                         )
                     }
                 }

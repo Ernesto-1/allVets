@@ -16,5 +16,5 @@ data class AVDiagnosisRequest(
 data class MedicalConsultation(
     val comments: String? = "",
     val diagnosis: String? = "",
-    val treaments: List<String>? = listOf()
+    val treaments: Map<String, String> = mapOf()
 )

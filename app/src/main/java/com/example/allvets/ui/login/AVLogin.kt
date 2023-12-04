@@ -35,6 +35,8 @@ import com.example.allvets.presentation.login.AVLoginEvent
 import com.example.allvets.presentation.login.AVLoginViewModel
 import com.example.allvets.ui.navigation.Route
 import com.example.allvets.ui.theme.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltViewModel()) {
@@ -51,26 +53,23 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
     val imageHeight = (screenWidth * 0.50f)
     val sharedPreferences = context.getSharedPreferences("UserId", Context.MODE_PRIVATE)
     LaunchedEffect(state.isUserAutenticate) {
-        if (state.isUserAutenticate?.isEmailVerified == true){
-            navController.navigate(Route.AVHOME){
+        notification()
+        if (state.isUserAutenticate?.isEmailVerified == true) {
+            navController.navigate(Route.AVHOME) {
                 launchSingleTop = true
                 popUpTo(Route.AVLOGIN) {
                     inclusive = true
                 }
             }
-            sharedPreferences.edit()
-                .putString(
-                    "myUserId",
-                    state.isUserAutenticate?.uid.toString()
-                ).apply()
+            sharedPreferences.edit().putString(
+                "myUserId", state.isUserAutenticate?.uid.toString()
+            ).apply()
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = R.drawable.background_allvets),
@@ -90,9 +89,9 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = {newEmail ->
+                    onValueChange = { newEmail ->
 
-                        if (newEmail.isEmpty() || newEmail.all { it.isLetterOrDigit() || it == '.' || it == '-' || it == '@' || it == '_'}) {
+                        if (newEmail.isEmpty() || newEmail.all { it.isLetterOrDigit() || it == '.' || it == '-' || it == '@' || it == '_' }) {
                             email = newEmail
                             errorEmail = false
                             state.message = ""
@@ -104,21 +103,21 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                         .wrapContentHeight()
                         .padding(vertical = 2.5.dp),
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),shape = RoundedCornerShape(16.dp),
-                    singleLine = true,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusRequester.requestFocus()
-                        }
+                        keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
                     ),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusRequester.requestFocus()
+                    }),
                     textStyle = MaterialTheme.typography.body1,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = plata,
                         unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.15f),
-                        textColor = Color.Black, focusedLabelColor = GreenLight
-                    ), isError = errorEmail || state.message.isNotEmpty()
+                        textColor = Color.Black,
+                        focusedLabelColor = GreenLight
+                    ),
+                    isError = errorEmail || state.message.isNotEmpty()
                 )
 
                 OutlinedTextField(
@@ -136,38 +135,44 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password
-                    ), shape = RoundedCornerShape(16.dp),
+                    ),
+                    shape = RoundedCornerShape(16.dp),
                     trailingIcon = {
                         if (password != "") {
                             IconButton(onClick = { hidden = !hidden }) {
-                                val vector = painterResource(if (hidden) R.drawable.visibility_true else R.drawable.visibility_false)
-                                val description = if (hidden) "Ocultar contraseña" else "Revelar contraseña"
+                                val vector =
+                                    painterResource(if (hidden) R.drawable.visibility_true else R.drawable.visibility_false)
+                                val description =
+                                    if (hidden) "Ocultar contraseña" else "Revelar contraseña"
                                 Icon(painter = vector, contentDescription = description)
                             }
                         }
                     },
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                             viewModel.onEvent(AVLoginEvent.Login(email, password))
-                        }
-                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        viewModel.onEvent(AVLoginEvent.Login(email, password))
+                    }),
                     singleLine = true,
                     visualTransformation = if (hidden) PasswordVisualTransformation() else VisualTransformation.None,
                     textStyle = MaterialTheme.typography.body1,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = plata,
                         unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.15f),
-                        textColor = Color.Black, focusedLabelColor = GreenLight
-                    ), isError = errorPassword || state.message.isNotEmpty()
+                        textColor = Color.Black,
+                        focusedLabelColor = GreenLight
+                    ),
+                    isError = errorPassword || state.message.isNotEmpty()
                 )
 
-                if (state.loading){
-                    CircularProgressIndicator(color = GreenLight, modifier = Modifier
-                        .size(30.dp)
-                        .padding(vertical = 10.dp))
-                }else if (errorEmail || state.message.isNotEmpty() || errorPassword) {
+                if (state.loading) {
+                    CircularProgressIndicator(
+                        color = GreenLight,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .padding(vertical = 10.dp)
+                    )
+                } else if (errorEmail || state.message.isNotEmpty() || errorPassword) {
                     Text(
-                        text =  state.message.ifEmpty { "Campo obligatorio" },
+                        text = state.message.ifEmpty { "Campo obligatorio" },
                         color = RedAlert,
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
@@ -178,20 +183,22 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ButtonDefault(
-                        textButton = "Iniciar sesion", modifier = Modifier.wrapContentWidth(), radius = 16.dp, enabled = !state.loading
+                        textButton = "Iniciar sesion",
+                        modifier = Modifier.wrapContentWidth(),
+                        radius = 16.dp,
+                        enabled = !state.loading
                     ) {
-                        if (email.isNotEmpty() && password.isNotEmpty() && email.matches(emailRegex)){
+                        if (email.isNotEmpty() && password.isNotEmpty() && email.matches(emailRegex)) {
                             viewModel.onEvent(AVLoginEvent.Login(email, password))
-                        }else{
+                        } else {
                             errorEmail = true
                             errorPassword = true
-                            if (!email.matches(emailRegex)){
+                            if (!email.matches(emailRegex)) {
                                 state.message = "Nombre de usuario o contraseña no validos"
                             }
                         }
                     }
-                    Text(
-                        text = "¿Olvidaste tu contraseña?",
+                    Text(text = "¿Olvidaste tu contraseña?",
                         color = Color.Black,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Light,
@@ -200,20 +207,15 @@ fun AVLogin(navController: NavController, viewModel: AVLoginViewModel = hiltView
                             .padding(top = 5.dp))
 
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.BottomCenter
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter
                     ) {
-                        Text(
-                            text = "¿No tienes cuenta? Registrate",
+                        Text(text = "¿No tienes cuenta? Registrate",
                             color = Color.Black,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
-                                .clickable {
-
-                                }
-                                .padding(bottom = 16.dp)
-                        )
+                                .clickable {}
+                                .padding(bottom = 16.dp))
                     }
                 }
 
@@ -234,15 +236,25 @@ fun ButtonDefault(
     Button(
         onClick = {
             onClick()
-        },
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (enabled)colorBackground else BackGroud,
+        }, enabled = enabled, colors = ButtonDefaults.buttonColors(
+            backgroundColor = if (enabled) colorBackground else BackGroud,
             contentColor = MaterialTheme.colors.surface
-        ),modifier = modifier, shape = RoundedCornerShape(radius)
+        ), modifier = modifier, shape = RoundedCornerShape(radius)
     ) {
         Text(
             text = textButton ?: ""
         )
     }
+}
+
+private fun notification() {
+    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w("TAG_notifications", "Fetching FCM registration token failed", task.exception)
+            return@OnCompleteListener
+        }
+        // Get new FCM registration token
+        val token = task.result
+        Log.i("TAG_notifications", "notification: Token: $token")
+    })
 }

@@ -26,10 +26,10 @@ fun AVFormVaccinationCard(
     val _diagnosis = remember { mutableStateOf("") }
     val diagnosis: MutableState<String> = _diagnosis
 
-    var _treatments = remember { mutableStateListOf<String>() }
-
+    val _treatments = remember { mutableStateListOf<String>() }
     val treatments: List<String> = _treatments
 
+    val treatmentsData = remember { mutableStateMapOf<String, String>() }
 
     if (tempData != null) {
         if (tempData.diagnosis?.isNotEmpty() == true && diagnosis.value.isEmpty()) {
@@ -38,18 +38,17 @@ fun AVFormVaccinationCard(
         if (tempData.comments?.isNotEmpty() == true && comments.value.isEmpty()) {
             _comments.value = tempData.comments
         }
-        if (tempData.treaments?.isNotEmpty() == true && treatments.isEmpty()) {
-            tempData.treaments.forEach {
-                _treatments.add(it)
+        if (tempData.treaments.isNotEmpty() && treatments.isEmpty()) {
+            tempData.treaments.map {
+                _treatments.add(it.key)
+                treatmentsData[it.key] = it.value
             }
         }
     }
 
-
-
     LaunchedEffect(key1 = Unit) {
-        if (_treatments.size == 0) {
-            _treatments.add("")
+        if (treatments.isEmpty()) {
+            _treatments.add("0")
         }
     }
 
@@ -58,17 +57,10 @@ fun AVFormVaccinationCard(
             MedicalConsultation(
                 comments = comments.value,
                 diagnosis = diagnosis.value,
-                treaments = treatments
+                treaments = treatmentsData
             )
         )
     }
-
-
-    val _treatmentItem = mutableStateOf("")
-    val treatmentItem: MutableState<String> = _treatmentItem
-
-    val _treatmentItemPos = mutableStateOf(0)
-    val treatmentItemPos: MutableState<Int> = _treatmentItemPos
 
     Column(
         modifier = Modifier
@@ -95,21 +87,20 @@ fun AVFormVaccinationCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            treatments.forEachIndexed { index, treatment ->
+            treatments.forEachIndexed { index, field ->
                 AVItemForm(
                     label = if (index == 0) "Tratamiento" else "",
-                    valueItem = treatment,
+                    valueItem = treatmentsData[field] ?: "",
                     noItem = (index + 1),
                     heightItem = 55.dp
                 ) {
-                    treatmentItem.value = it
-                    treatmentItemPos.value = index
+                    treatmentsData[field] = it
                 }
             }
         }
 
         AVButtonAdd(text = "Agregar tratamiento") {
-            _treatments.add(treatmentItemPos.value, treatmentItem.value)
+            _treatments.add("${treatments.size}")
         }
 
         ButtonDefault(
@@ -121,7 +112,7 @@ fun AVFormVaccinationCard(
                 MedicalConsultation(
                     comments = comments.value,
                     diagnosis = diagnosis.value,
-                    treaments = treatments
+                    treaments = treatmentsData
                 )
             )
         }

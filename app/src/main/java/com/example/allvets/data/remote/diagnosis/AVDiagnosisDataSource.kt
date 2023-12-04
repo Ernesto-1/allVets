@@ -15,6 +15,14 @@ class AVDiagnosisDataSource @Inject constructor(
 ) {
     suspend fun sendDiagnosis(diagnosis: AVDiagnosisRequest): Boolean {
         return try {
+            val treatmentsList =  mutableListOf<String>()
+
+            diagnosis.consultation.treaments.map {
+                if(it.value.isNotEmpty()){
+                    treatmentsList.add(it.value)
+                }
+            }
+
             val dataMedicalRecord = mapOf(
                 "Asunto" to diagnosis.medicalMatter,
                 "Cartilla" to diagnosis.cardMedical,
@@ -22,7 +30,7 @@ class AVDiagnosisDataSource @Inject constructor(
                 "Comentarios" to diagnosis.consultation.comments,
                 "Diagnostico" to diagnosis.consultation.diagnosis,
                 "Fecha" to diagnosis.date,
-                "Tratamiento" to diagnosis.consultation.treaments
+                "Tratamiento" to treatmentsList
             )
 
             val newMedicalRecord = firebaseFirestore

@@ -80,7 +80,7 @@ fun AVCardOfPatient(
                                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold
                                         )
                                     ) {
-                                        append(dataCard.patient)
+                                        append(dataCard.patient?.capitalizeName())
                                     }
                                 }, modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
                             )
@@ -90,7 +90,8 @@ fun AVCardOfPatient(
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(fontSize = 12.sp)) {
-                                    append(if (dataCard.status == "pendiente") "Fecha solicitada: " else "Fecha propuesta: ")
+                                    append(if (dataCard.status == "pendiente") "Fecha solicitada: " else
+                                        if(dataCard.status == "completada") "Fecha: " else "Fecha propuesta: ")
                                 }
                                 withStyle(
                                     style = SpanStyle(

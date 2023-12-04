@@ -72,8 +72,8 @@ data class RecordData(
     val comments: String = "",
     val diagnosis: String = "",
     val date: Timestamp? = null,
-    val treatment: ArrayList<*>? = null,
-    val medicalRecordList: ArrayList<Medicamento> = arrayListOf()
+    val treatment: List<*>? = null,
+    val medicalRecordList: List<Medicamento> = arrayListOf()
 )
 
 fun List<DocumentSnapshot?>.toDataMedicalReport(): MedicalRecordData {
@@ -106,8 +106,8 @@ fun DocumentSnapshot?.mapToMedicalRecordData(): RecordData {
             Medicamento(
                 nombre = hash["treatment"].toString(),
                 numero_medicamento = hash["code"].toString(),
-                tipo = hash["type"].toString()
-
+                tipo = hash["type"].toString(),
+                nextAplication = hash["nextAplication"].toString()
             )
         )
     }
@@ -120,5 +120,6 @@ fun DocumentSnapshot?.mapToMedicalRecordData(): RecordData {
 data class Medicamento(
     val nombre: String = "",
     val numero_medicamento: String = "",
-    val tipo: String = ""
+    val tipo: String = "",
+    val nextAplication: String = ""
 )
